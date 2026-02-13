@@ -41,21 +41,26 @@ class Car:
 
     def reset(self):
         self.x, self.y = self.spawn_pos
+       
         self.speed = 0
         self.angle = 0
-        self.current_cp_idx = 0
+
+        self.current_cp_idx = 0 
         self.laps = 0
         self.lap_start_time = pygame.time.get_ticks()
-        self.last_lap_time = 0
-        self.best_lap_time = float('inf')
+        self.last_lap_time  = 0
+        self.best_lap_time  = float('inf')
 
     def update(self, keys, checkpoints):
         old_x, old_y = self.x, self.y
-        old_angle = self.angle
+        old_angle    = self.angle
 
-        if keys[pygame.K_UP]: self.speed += 0.15
-        elif keys[pygame.K_DOWN]: self.speed -= 0.15
-        else: self.speed *= 0.96
+        if keys[pygame.K_UP]:
+            self.speed += 0.15
+        elif keys[pygame.K_DOWN]: 
+            self.speed -= 0.15
+        else: 
+            self.speed *= 0.96
         
         self.speed = max(-2, min(self.speed, 5))
         if self.speed != 0:
@@ -72,12 +77,13 @@ class Car:
         
         if wall_mask.overlap(car_mask, (rect.x, rect.y)):
             self.x, self.y = old_x, old_y
-            self.angle = old_angle
-            self.speed *= -0.5
+            self.angle     = old_angle
+            self.speed    *= -0.5
 
         if checkpoints:
             p1, p2 = checkpoints[self.current_cp_idx]
-            dist = self.dist_point_to_line(pygame.Vector2(self.x, self.y), pygame.Vector2(p1), pygame.Vector2(p2))
+            dist   = self.dist_point_to_line(pygame.Vector2(self.x, self.y), pygame.Vector2(p1), pygame.Vector2(p2))
+           
             if dist < 15:
                 self.current_cp_idx = (self.current_cp_idx + 1) % len(checkpoints)
                 if self.current_cp_idx == 0:
@@ -111,6 +117,7 @@ def save_data(spawn, checkpoints):
 def load_data():
     if not os.path.exists(SAVE_FILE): return [TRACK_WIDTH//2, TRACK_HEIGHT//2], []
     try:
+        # prettify thihs string manipulation
         with open(SAVE_FILE, "r") as f:
             lines = f.readlines()
             spawn = [int(i) for i in lines[0].strip().split(",")]
@@ -123,10 +130,23 @@ def load_data():
             return spawn, checkpoints
     except: return [TRACK_WIDTH//2, TRACK_HEIGHT//2], []
 
+
+
+# ---------------- Rendering Settings ----------
+render = True
+# Modes: all, minmax, top10, best
+render_mode = 'all'
+render_interval = 10
+tick_rate = 60
+
 # ----------------- Main Loop -----------------
 spawn_pos, user_checkpoints = load_data()
 car = Car(spawn_pos[0], spawn_pos[1])
 temp_point = None
+
+
+
+
 
 while True:
     screen.blit(track_image, (0, 0))
@@ -178,4 +198,4 @@ while True:
 
     car.draw(screen)
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(tick_rate)
