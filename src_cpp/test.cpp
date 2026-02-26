@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include "neural_net.h"
 #include <cassert>
 #include <chrono>
 #include <iostream>
@@ -122,12 +123,42 @@ void test_large_multiplication() {
   }
 }
 
+void test_matrix_large_addition() {
+  std::cout << "Testing Large Matrix Addition Performance..." << std::endl;
+  int N = 512; // Size of the matrix (N x N)
+  std::cout << "  Matrix Size: " << N << "x" << N << std::endl;
+
+  // Generate matrices
+  Matrix A = generate_random_matrix(N, N, Matrix::row, 1);
+  Matrix B = generate_random_matrix(N, N, Matrix::row, 2);
+
+  auto start = std::chrono::steady_clock::now();
+  Matrix C = A + B;
+  auto end = std::chrono::steady_clock::now();
+  auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+                  .count();
+  std::cout << "  Addition Time: " << diff << " ms" << std::endl;
+}
+
 void matrix_tests() {
   std::cout << "Running Matrix Tests..." << std::endl;
   test_commutativity();
   test_associativity();
   test_large_multiplication();
   std::cout << "Tests Completed." << std::endl;
+}
+
+float ReLu(float x) { return std::max(x, 0.0f); }
+
+Matrix ReLu(Matrix A) {
+  return map([](float x) { return ReLu(x); }, A);
+}
+
+Matrix reLu_test() {
+  std::cout << "Testing ReLu..." << std::endl;
+  Matrix A = generate_random_matrix(1024, 1024, Matrix::row, 1);
+  Matrix B = ReLu(A);
+  return B;
 }
 
 int main() {

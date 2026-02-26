@@ -9,5 +9,6 @@
             ]
         }
     },
-    "terminal.integrated.defaultProfile.windows": "Project-PowerShell"
+    "terminal.integrated.defaultProfile.windows": "Project-PowerShell",
+    "ansible.python.interpreterPath": "c:\\Users\\abdul\\nn-racing\\NN-Racing\\.venv\\Scripts\\python.exe"
 }

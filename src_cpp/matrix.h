@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <vector>
 
@@ -17,9 +18,11 @@ private:
 public:
   Matrix(int m, int n, std::vector<float> x, Rank rank = row);
   Matrix(int m, int n, Rank rank = row);
+  Matrix(int m, int n, float fill_val, Rank rank = row);
 
   int get_rows() const;
   int get_columns() const;
+  int size() const;
 
   void transpose();
 
@@ -29,12 +32,19 @@ public:
   // Mutable accessor for assignment
   float &operator()(int idx_r, int idx_c);
 
+  float &operator()(int idx);
+
   friend float dot(const std::vector<float> &a, const std::vector<float> &b);
 
   Matrix operator*(const Matrix &A) const;
 
+  Matrix operator+(const Matrix &A) const;
+
   bool operator==(const Matrix &other) const;
 
+  void map(std::function<float(float)> f);
+
+  friend Matrix map(std::function<float(float)> f, const Matrix &A);
   void print() const;
 };
 

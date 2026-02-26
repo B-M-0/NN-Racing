@@ -8,9 +8,16 @@ find_package(Python COMPONENTS Interpreter Development REQUIRED)
 add_subdirectory(extern/pybind11)
 
 # Create the module
-# "nn_engine" is what you will call 'import' on in Python
+# "nn_engine" --> 'import' in Python
 pybind11_add_module(nn_engine 
     src_cpp/matrix.cpp 
     src_cpp/neural_net.cpp 
-    src_cpp/bindings.cpp
+    src_cpp/binding.cpp
+)
+
+# C++ Test Runner
+add_executable(test_runner 
+    src_cpp/test.cpp 
+    src_cpp/matrix.cpp 
+    src_cpp/neural_net.cpp
 )

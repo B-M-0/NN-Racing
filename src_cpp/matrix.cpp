@@ -17,10 +17,18 @@ Matrix::Matrix(int m, int n, Rank rank) {
   this->rank = rank;
 }
 
+Matrix::Matrix(int m, int n, float fill_val, Rank rank) {
+  this->rows = m;
+  this->cols = n;
+  this->elements = std::vector<float>(m * n, fill_val);
+  this->rank = rank;
+}
+
 int Matrix::get_rows() const { return this->rows; }
 
 int Matrix::get_columns() const { return this->cols; }
 
+int Matrix::size() const { return elements.size(); }
 void Matrix::transpose() {
   if (this->rank == row)
     this->rank = column;
@@ -41,6 +49,8 @@ float &Matrix::operator()(int idx_r, int idx_c) {
   else
     return elements[idx_c * rows + idx_r];
 }
+
+float &Matrix::operator()(int idx) { return elements[idx]; }
 
 float dot(const std::vector<float> &a, const std::vector<float> &b) {
   float sum = 0.0f;
@@ -261,6 +271,18 @@ Matrix Matrix::operator*(const Matrix &A) const {
   return output;
 }
 
+Matrix Matrix::operator+(const Matrix &A) const {
+  if (rows != A.rows || cols != A.cols)
+    throw std::invalid_argument(
+        "Matrices must have the same dimensions for addition");
+
+  Matrix result(rows, cols);
+  for (size_t i = 0; i < elements.size(); ++i) {
+    result.elements[i] = elements[i] + A.elements[i];
+  }
+  return result;
+}
+
 bool Matrix::operator==(const Matrix &other) const {
   if (rows != other.rows || cols != other.cols)
     return false;
@@ -281,4 +303,18 @@ void Matrix::print() const {
     }
     std::cout << "]" << std::endl;
   }
+}
+
+void Matrix::map(std::function<float(float)> f) {
+  for (size_t i = 0; i < elements.size(); i++) {
+    elements[i] = f(elements[i]);
+  }
+}
+
+Matrix map(std::function<float(float)> f, const Matrix &A) {
+  Matrix result(A.get_rows(), A.get_columns());
+  for (size_t i = 0; i < A.elements.size(); i++) {
+    result.elements[i] = f(A.elements[i]);
+  }
+  return result;
 }
